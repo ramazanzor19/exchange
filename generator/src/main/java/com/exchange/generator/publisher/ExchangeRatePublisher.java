@@ -22,7 +22,6 @@ public class ExchangeRatePublisher {
     return redisTemplate
         .opsForHash()
         .putAll(key, map)
-        .doOnSuccess((success) -> LOGGER.info("Map published to Redis"))
         .doOnError((error) -> LOGGER.error("Error publishing to Redis: {}", error.getMessage()))
         .onErrorReturn(false);
   }

@@ -69,10 +69,14 @@ class CurrencyLayerServiceTest {
     Mockito.when(responseSpec.bodyToMono(ExchangeRateResponse.class))
         .thenReturn(Mono.error(expectedError));
 
-    Mono<ExchangeRateResponse> result = currencyLayerService.getExchangeRate();
-
-    StepVerifier.create(result)
-        .expectErrorMatches(throwable -> throwable.equals(expectedError))
+    StepVerifier.create(currencyLayerService.getExchangeRate())
+        .expectErrorMatches(
+            throwable -> {
+              Assertions.assertEquals("API error", throwable.getCause().getMessage());
+              return true;
+            })
         .verify();
+
+    Mockito.verify(responseSpec, Mockito.times(1)).bodyToMono(ExchangeRateResponse.class);
   }
 }
