@@ -10,16 +10,15 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration(proxyBeanMethods = false)
 class TestcontainersConfiguration {
 
-	@Bean
-	@ServiceConnection
-	MongoDBContainer mongoDbContainer() {
-		return new MongoDBContainer(DockerImageName.parse("mongo:latest"));
-	}
+  @Bean
+  @ServiceConnection
+  MongoDBContainer mongoDbContainer() {
+    return new MongoDBContainer(DockerImageName.parse("mongo:8.0"));
+  }
 
-	@Bean
-	@ServiceConnection(name = "redis")
-	GenericContainer<?> redisContainer() {
-		return new GenericContainer<>(DockerImageName.parse("redis:latest")).withExposedPorts(6379);
-	}
-
+  @Bean
+  @ServiceConnection(name = "redis")
+  GenericContainer<?> redisContainer() {
+    return new GenericContainer<>(DockerImageName.parse("redis:7-alpine")).withExposedPorts(6379);
+  }
 }
