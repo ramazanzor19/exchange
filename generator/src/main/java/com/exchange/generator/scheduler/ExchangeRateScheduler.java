@@ -15,7 +15,7 @@ import reactor.core.scheduler.Schedulers;
 public class ExchangeRateScheduler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ExchangeRateScheduler.class);
-  private static final String EXCHANGE_RATE_KEY = "exchangeRate";
+  private static final String EXCHANGE_RATE_KEY = "exchange:rates";
 
   private final CurrencyLayerService currencyLayerService;
   private final ExchangeRatePublisher exchangeRatePublisher;

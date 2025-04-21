@@ -40,7 +40,7 @@ class ExchangeRateFetcherTest {
         .expectNext(TEST_RATE)
         .verifyComplete();
 
-    verify(hashOperations).get(TEST_KEY, TEST_CURRENCY);
+    verify(hashOperations).get(TEST_KEY, TEST_CURRENCY.name());
   }
 
   @Test
@@ -54,7 +54,7 @@ class ExchangeRateFetcherTest {
               Assertions.assertTrue(error.getMessage().contains(TEST_CURRENCY.toString()));
             });
 
-    verify(hashOperations).get(TEST_KEY, TEST_CURRENCY);
+    verify(hashOperations).get(TEST_KEY, TEST_CURRENCY.name());
   }
 
   @Test
@@ -65,7 +65,7 @@ class ExchangeRateFetcherTest {
     StepVerifier.create(exchangeRateFetcher.getExchangeRate(TEST_KEY, TEST_CURRENCY))
         .verifyErrorMatches(error -> error.equals(redisError));
 
-    verify(hashOperations).get(TEST_KEY, TEST_CURRENCY);
+    verify(hashOperations).get(TEST_KEY, TEST_CURRENCY.name());
   }
 
   @Test
