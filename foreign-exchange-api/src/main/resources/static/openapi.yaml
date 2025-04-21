@@ -84,6 +84,40 @@ paths:
               example:
                 message: 'Unexpected error occurred'
 
+  /api/convert:
+    post:
+      tags: [ Currency Conversion ]
+      summary: Convert currency amount
+      description: |
+        Converts an amount from source to target currency using latest rates.
+        Returns transaction ID for reference.
+      operationId: convertCurrency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversionRequest'
+      responses:
+        '200':
+          description: Successful conversion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversionResponse'
+        '400':
+          description: Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Exchange rate not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     CurrencyCode:
@@ -126,3 +160,54 @@ components:
           type: string
           description: Human-readable error description
           example: "Exchange rate not found for currency: JPY"
+
+    ConversionRequest:
+      type: object
+      required: [ amount, source, target ]
+      properties:
+        amount:
+          type: number
+          format: double
+          minimum: 0.01
+          description: Amount to convert (positive value)
+          example: 100.50
+        source:
+          $ref: '#/components/schemas/CurrencyCode'
+          description: Source currency
+          example: EUR
+        target:
+          $ref: '#/components/schemas/CurrencyCode'
+          description: Target currency
+          example: JPY
+
+    ConversionResponse:
+      type: object
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+          description: Unique transaction identifier
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        source:
+          $ref: '#/components/schemas/CurrencyCode'
+          description: Source currency code
+          example: EUR
+        sourceAmount:
+          type: number
+          format: double
+          description: Original amount in source currency
+          example: 100.50
+        target:
+          $ref: '#/components/schemas/CurrencyCode'
+          description: Target currency code
+          example: JPY
+        targetAmount:
+          type: number
+          format: double
+          description: Converted amount in target currency
+          example: 16325.75
+        timestamp:
+          type: string
+          format: date-time
+          description: Conversion timestamp (UTC)
+          example: "2025-04-22T14:30:00Z"

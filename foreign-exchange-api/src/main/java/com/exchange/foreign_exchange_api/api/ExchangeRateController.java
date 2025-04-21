@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/exchange-rates")
+@RequestMapping("/api")
 public class ExchangeRateController {
 
   private final ExchangeRateService exchangeRateService;
@@ -20,7 +20,7 @@ public class ExchangeRateController {
     this.exchangeRateService = exchangeRateService;
   }
 
-  @GetMapping
+  @GetMapping("/exchange-rates")
   public Mono<ExchangeRateResponse> getExchangeRate(@Valid ExchangeRateRequest request) {
     return exchangeRateService
         .getExchangeRate(request.source(), request.target())

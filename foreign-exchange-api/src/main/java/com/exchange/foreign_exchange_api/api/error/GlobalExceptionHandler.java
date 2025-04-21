@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.server.ServerWebInputException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -16,14 +17,20 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ex.getMessage()));
   }
 
-  @ExceptionHandler(WebExchangeBindException.class)
-  public ResponseEntity<ErrorResponse> handleValidation(WebExchangeBindException ex) {
-    String message =
-        ex.getFieldErrors().stream()
-            .map(field -> field.getField() + ": invalid or unsupported value")
-            .collect(Collectors.joining("; "));
+  @ExceptionHandler({WebExchangeBindException.class, ServerWebInputException.class})
+  public ResponseEntity<ErrorResponse> handleValidationExceptions(Exception ex) {
+    String errorMessage =
+        switch (ex) {
+          case WebExchangeBindException bindEx ->
+              bindEx.getFieldErrors().stream()
+                  .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                  .collect(Collectors.joining(", "));
+          case ServerWebInputException inputEx -> inputEx.getCause().getMessage();
+          case null, default -> "Invalid request";
+        };
 
-    return ResponseEntity.badRequest().body(new ErrorResponse("Validation failed: " + message));
+    return ResponseEntity.badRequest()
+        .body(new ErrorResponse("Validation failed: " + errorMessage));
   }
 
   @ExceptionHandler(Exception.class)
