@@ -22,7 +22,7 @@ public class ExchangeRateFetcher {
   public Mono<Double> getExchangeRate(String key, CurrencyCode currencyCode) {
     return redisTemplate
         .opsForHash()
-        .get(key, currencyCode)
+        .get(key, currencyCode.name())
         .ofType(Double.class)
         .switchIfEmpty(
             Mono.error(
