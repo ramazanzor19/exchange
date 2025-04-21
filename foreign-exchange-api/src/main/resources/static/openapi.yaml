@@ -1,0 +1,128 @@
+openapi: 3.0.0
+info:
+  title: Foreign Exchange API
+  description: |
+    Provides real-time currency exchange rates.
+    Supports all 168 currencies from currencylayer.com.
+    [View full currency list](https://currencylayer.com/currencies)
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: ramazanzor19@gmail.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+
+paths:
+  /api/exchange-rates:
+    get:
+      tags: [ Exchange Rates ]
+      summary: Get exchange rate between two currencies
+      description: |
+        Calculates the exchange rate between source and target currencies.
+        Rates are fetched from Redis and calculated as (target/USD) ÷ (source/USD).
+      operationId: getExchangeRate
+      parameters:
+        - name: source
+          in: query
+          required: true
+          description: |
+            3-letter ISO currency code for the source currency.
+          schema:
+            $ref: '#/components/schemas/CurrencyCode'
+          example: EUR
+        - name: target
+          in: query
+          required: true
+          description: |
+            3-letter ISO currency code for the target currency.
+          schema:
+            $ref: '#/components/schemas/CurrencyCode'
+          example: GBP
+      responses:
+        '200':
+          description: Successful response with exchange rate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExchangeRateResponse'
+              example:
+                source: EUR
+                target: GBP
+                rate: 0.85
+                timestamp: "2025-04-21T14:30:00Z"
+        '400':
+          description: |
+            Invalid input:
+            - Missing parameters
+            - Invalid currency codes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Validation failed: target: invalid or unsupported value"
+        '404':
+          description: |
+            Exchange rate not available for:
+            - Unsupported currency pair
+            - Temporary rate unavailability
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Exchange rate not found for currency: JPY"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                message: 'Unexpected error occurred'
+
+components:
+  schemas:
+    CurrencyCode:
+      type: string
+      description: ISO 4217 currency code with full name
+      pattern: '^[A-Z]{3}$'
+      example: EUR
+      x-currency-metadata:
+        source: currencylayer.com
+        count: 168
+        updated: 2025-04-22
+
+    ExchangeRateResponse:
+      type: object
+      description: Exchange rate calculation result
+      properties:
+        source:
+          $ref: '#/components/schemas/CurrencyCode'
+          description: Source currency code
+        target:
+          $ref: '#/components/schemas/CurrencyCode'
+          description: Target currency code
+        rate:
+          type: number
+          format: double
+          description: |
+            Conversion rate (1 source = X target).
+            Example: 0.85 means 1 EUR = 0.85 GBP
+          example: 0.92
+        timestamp:
+          type: string
+          format: date-time
+          description: Time when rate was calculated
+          example: "2025-04-21T14:30:00Z"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Human-readable error description
+          example: "Exchange rate not found for currency: JPY"
