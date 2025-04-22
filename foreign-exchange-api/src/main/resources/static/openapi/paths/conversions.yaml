@@ -1,0 +1,86 @@
+get:
+  tags: [ Conversion History ]
+  summary: Get conversion history
+  description: |
+    Retrieves paginated conversion history with optional filtering by:
+    - Transaction ID
+    - Date range
+  operationId: getConversionHistory
+  parameters:
+    - name: transactionId
+      in: query
+      description: Filter by specific transaction ID
+      schema:
+        type: string
+        format: uuid
+      example: "550e8400-e29b-41d4-a716-446655440000"
+    - name: start
+      in: query
+      description: Start date filter (inclusive)
+      schema:
+        type: string
+        format: date-time
+      example: "2023-01-01T00:00:00Z"
+    - name: end
+      in: query
+      description: End date filter (exclusive)
+      schema:
+        type: string
+        format: date-time
+      example: "2023-12-31T23:59:59Z"
+    - name: page
+      in: query
+      description: Page number (0-based)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      example: 0
+    - name: limit
+      in: query
+      description: Items per page
+      schema:
+        type: integer
+        minimum: 10
+        maximum: 200
+        enum: [ 10, 25, 50, 100, 200 ]
+        default: 25
+      example: 25
+  responses:
+    '200':
+      description: Successful response with paginated conversions
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/transactions.yaml#/components/schemas/PaginatedConversionResponse'
+    '400':
+      description: Invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/common.yaml#/components/schemas/ErrorResponse'
+          examples:
+            invalidLimit:
+              value:
+                message: "Validation failed: limit must be one of: 10, 25, 50, 100, 200"
+            invalidDateRange:
+              value:
+                message: "Validation failed: start date must be before end date"
+    '404':
+      description: |
+        Not found cases:
+        - Page out of range
+        - Exchange rate not found for currency
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/common.yaml#/components/schemas/ErrorResponse'
+          examples:
+            pageOutOfRange:
+              value:
+                message: "Page 5 is out of range (max 3)"
+            exchangeRateNotFound:
+              value:
+                message: "Exchange rate not found for currency: JPY"
+    '500':
+      $ref: '../schemas/common.yaml#/components/responses/ServerError'

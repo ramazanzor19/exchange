@@ -1,0 +1,24 @@
+post:
+  tags: [ Currency Conversion ]
+  summary: Convert currency amount
+  description: |
+    Converts an amount from source to target currency using latest rates.
+    Returns transaction ID for reference.
+  operationId: convertCurrency
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/currency.yaml#/components/schemas/ConversionRequest'
+  responses:
+    '200':
+      description: Successful conversion
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/currency.yaml#/components/schemas/ConversionResponse'
+    '400':
+      $ref: '../schemas/common.yaml#/components/responses/BadRequest'
+    '404':
+      $ref: '../schemas/common.yaml#/components/responses/NotFound'

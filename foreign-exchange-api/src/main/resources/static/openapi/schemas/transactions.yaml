@@ -1,0 +1,57 @@
+# schemas/transactions.yaml
+components:
+  schemas:
+    PaginatedConversionResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionResponse'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+      example:
+        data:
+          - transactionId: "550e8400-e29b-41d4-a716-446655440000"
+            source: EUR
+            sourceAmount: 100.00
+            target: USD
+            targetAmount: 107.50
+            timestamp: "2023-05-15T14:30:00Z"
+        meta:
+          totalCount: 42
+          totalPages: 2
+          currentPage: 0
+          perPage: 25
+
+    TransactionResponse:
+      type: object
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+        source:
+          $ref: '../schemas/currency.yaml#/components/schemas/CurrencyCode'
+        sourceAmount:
+          type: number
+          format: double
+        target:
+          $ref: '../schemas/currency.yaml#/components/schemas/CurrencyCode'
+        targetAmount:
+          type: number
+          format: double
+        timestamp:
+          type: string
+          format: date-time
+
+    PaginationMeta:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+        totalPages:
+          type: integer
+        currentPage:
+          type: integer
+        perPage:
+          type: integer

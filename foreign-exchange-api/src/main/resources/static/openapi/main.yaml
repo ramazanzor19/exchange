@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  title: Foreign Exchange API
+  description: |
+    Provides real-time currency exchange rates.
+    Supports all 168 currencies from currencylayer.com.
+    [View full currency list](https://currencylayer.com/currencies)
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: ramazanzor19@gmail.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+
+paths:
+  /api/exchange-rates:
+    $ref: './paths/exchange-rates.yaml'
+  /api/convert:
+    $ref: './paths/convert.yaml'
+  /api/conversions:
+    $ref: './paths/conversions.yaml'
+
+
+components:
+  schemas:
+    CurrencyCode:
+      $ref: './schemas/currency.yaml#/components/schemas/CurrencyCode'
+    ExchangeRateResponse:
+      $ref: './schemas/currency.yaml#/components/schemas/ExchangeRateResponse'
+    ConversionRequest:
+      $ref: './schemas/currency.yaml#/components/schemas/ConversionRequest'
+    ConversionResponse:
+      $ref: './schemas/currency.yaml#/components/schemas/ConversionResponse'
+    ErrorResponse:
+      $ref: './schemas/common.yaml#/components/schemas/ErrorResponse'
+    PaginatedConversionResponse:
+      $ref: './schemas/transactions.yaml#/components/schemas/PaginatedConversionResponse'
+    TransactionResponse:
+      $ref: './schemas/transactions.yaml#/components/schemas/TransactionResponse'
+    PaginationMeta:
+      $ref: './schemas/transactions.yaml#/components/schemas/PaginationMeta'

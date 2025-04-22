@@ -1,0 +1,67 @@
+components:
+  schemas:
+    CurrencyCode:
+      type: string
+      description: ISO 4217 currency code with full name
+      pattern: '^[A-Z]{3}$'
+      example: EUR
+      x-currency-metadata:
+        source: currencylayer.com
+        count: 168
+        updated: 2025-04-22
+
+    ExchangeRateResponse:
+      type: object
+      description: Exchange rate calculation result
+      properties:
+        source:
+          $ref: '#/components/schemas/CurrencyCode'
+        target:
+          $ref: '#/components/schemas/CurrencyCode'
+        rate:
+          type: number
+          format: double
+          description: Conversion rate (1 source = X target)
+          example: 0.92
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-04-21T14:30:00Z"
+
+    ConversionRequest:
+      type: object
+      required: [ amount, source, target ]
+      properties:
+        amount:
+          type: number
+          format: double
+          minimum: 0.01
+          example: 100.50
+        source:
+          $ref: '#/components/schemas/CurrencyCode'
+        target:
+          $ref: '#/components/schemas/CurrencyCode'
+
+    ConversionResponse:
+      type: object
+      properties:
+        transactionId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        source:
+          $ref: '#/components/schemas/CurrencyCode'
+        sourceAmount:
+          type: number
+          format: double
+          example: 100.50
+        target:
+          $ref: '#/components/schemas/CurrencyCode'
+        targetAmount:
+          type: number
+          format: double
+          example: 16325.75
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-04-22T14:30:00Z"

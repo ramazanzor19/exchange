@@ -4,8 +4,9 @@ import org.springframework.boot.SpringApplication;
 
 public class TestForeignExchangeApiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.from(ForeignExchangeApiApplication::main).with(TestcontainersConfiguration.class).run(args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.from(ForeignExchangeApiApplication::main)
+        .with(FxTestContainersConfiguration.class)
+        .run(args);
+  }
 }
