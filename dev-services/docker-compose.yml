@@ -4,8 +4,6 @@ services:
   redis:
     image: redis:7-alpine
     container_name: local-redis
-    ports:
-      - "6379:6379"
     volumes:
       - redis-data:/data
     command: [ "redis-server", "--save", "60", "1", "--loglevel", "warning" ]
@@ -45,8 +43,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    ports:
-      - "27017:27017"
     networks:
       - exchange-network
 
