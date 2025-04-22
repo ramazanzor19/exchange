@@ -1,0 +1,35 @@
+get:
+  tags: [ Exchange Rates ]
+  summary: Get exchange rate between two currencies
+  description: |
+    Calculates the exchange rate between source and target currencies.
+    Rates are fetched from Redis and calculated as (target/USD) ÷ (source/USD).
+  operationId: getExchangeRate
+  parameters:
+    - name: source
+      in: query
+      required: true
+      description: 3-letter ISO currency code for the source currency.
+      schema:
+        $ref: '../schemas/currency.yaml#/components/schemas/CurrencyCode'
+      example: EUR
+    - name: target
+      in: query
+      required: true
+      description: 3-letter ISO currency code for the target currency.
+      schema:
+        $ref: '../schemas/currency.yaml#/components/schemas/CurrencyCode'
+      example: GBP
+  responses:
+    '200':
+      description: Successful response with exchange rate
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/currency.yaml#/components/schemas/ExchangeRateResponse'
+    '400':
+      $ref: '../schemas/common.yaml#/components/responses/BadRequest'
+    '404':
+      $ref: '../schemas/common.yaml#/components/responses/NotFound'
+    '500':
+      $ref: '../schemas/common.yaml#/components/responses/ServerError'
