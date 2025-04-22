@@ -9,16 +9,26 @@ services:
     volumes:
       - redis-data:/data
     command: [ "redis-server", "--save", "60", "1", "--loglevel", "warning" ]
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    networks:
+      - exchange-network
 
   redis-insight:
     image: redislabs/redisinsight:latest
     container_name: redis-insight
     ports:
-      - "5540:5540"
+      - "${REDISINSIGHT_PORT:-5540}:5540"
     depends_on:
       - redis
     volumes:
       - redisinsight_data:/data
+    networks:
+      - exchange-network
 
   mongodb:
     image: mongo:8.0
@@ -37,12 +47,14 @@ services:
       retries: 5
     ports:
       - "27017:27017"
+    networks:
+      - exchange-network
 
   mongo-express:
     image: mongo-express:1.0
     container_name: mongo-ui
     ports:
-      - "8001:8081"
+      - "${MONGO_EXPRESS_PORT:-8081}:8081"
     environment:
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongodb:27017/
       ME_CONFIG_BASICAUTH_USERNAME: admin
@@ -50,8 +62,53 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+    networks:
+      - exchange-network
+
+  generator:
+    build:
+      context: ../generator
+      dockerfile: Dockerfile
+    container_name: currency-generator
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - CURRENCY_LAYER_API_KEY=${CURRENCY_LAYER_API_KEY}
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    depends_on:
+      - redis
+    networks:
+      - exchange-network
+
+  api:
+    build:
+      context: ../foreign-exchange-api
+      dockerfile: Dockerfile
+    container_name: foreign-exchange-api
+    environment:
+      - SERVER_PORT=${API_PORT:-8080}
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATA_MONGODB_HOST=mongodb
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRINGDOC_SWAGGER_UI_PATH=/swagger-ui.html
+    ports:
+      - "${API_PORT:-8080}:${API_PORT:-8080}"
+    depends_on:
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    networks:
+      - exchange-network
+
 
 volumes:
   redis-data:
   redisinsight_data:
   mongodb_data:
+
+networks:
+  exchange-network:
+    driver: bridge
