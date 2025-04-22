@@ -28,8 +28,24 @@ get:
           schema:
             $ref: '../schemas/currency.yaml#/components/schemas/ExchangeRateResponse'
     '400':
-      $ref: '../schemas/common.yaml#/components/responses/BadRequest'
+      description: Invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/common.yaml#/components/schemas/ErrorResponse'
+          examples:
+            validationFailed:
+              value:
+                message: "Validation failed: CurrencyCode is not a valid ISO 4217 currency code"
     '404':
-      $ref: '../schemas/common.yaml#/components/responses/NotFound'
+      description: Exchange rate not found for currency
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/common.yaml#/components/schemas/ErrorResponse'
+          examples:
+            rateNotFound:
+              value:
+                message: "Exchange rate not found for currency: JPY"
     '500':
       $ref: '../schemas/common.yaml#/components/responses/ServerError'
