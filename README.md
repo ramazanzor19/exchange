@@ -69,6 +69,19 @@ docker-compose up --build
 
 ---
 
+## Architecture
+
+The system consists of several key components working together:
+
+- **Currency Generator**: Fetches exchange rates from the CurrencyLayer API and publishes them to Redis.
+- **API Service**: Provides the foreign exchange rates through an HTTP API.
+- **MongoDB**: Stores the exchange rate history for auditing and reporting.
+- **Redis**: Caches exchange rates for fast access.
+- **Mongo Express**: A simple web UI for managing MongoDB data.
+- **Redis Insight**: A web UI for managing and monitoring Redis.
+
+![Architecture Diagram](documents/arch_diagram.png)
+
 ## 📚 Documentation
 
 - **Swagger UI**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
